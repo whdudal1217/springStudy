@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.example.sample.service.impl.DoroMapper">
+
+
+	<select id="selectTest" resultType="egovMap">
+		SELECT *
+		FROM test
+	</select>
+
+	<select id="selectDoroList" parameterType="doroVO" resultType="doroVO">
+			<!-- SELECT *
+			FROM TC_SPRD_STRET
+			WHERE 1=1
+			ORDER BY SIGN ASC
+			LIMIT #{recordCountPerPage} OFFSET #{firstIndex} -->
+			SELECT
+			      AAA.*
+			  FROM( SELECT
+			              COUNT(*) OVER() AS TOTAL_COUNT,
+			              AA.*
+			         FROM(
+			         	   SELECT ROW_NUMBER() OVER (ORDER BY RN_CD ASC) as RNUM
+			                     ,RN_CD
+			                     ,RN
+			                     ,ENG_RN
+			                     ,EMD_NO
+			                     ,CN
+			                     ,ENG_CN
+			                     ,SIGN
+			                     ,ENG_SIGN
+			                     ,EMDN
+			                     ,ENG_EMD
+			                     ,EMD_SE
+			                     ,EMD_CD
+			                     ,USE_YN
+			                     ,CHGHY
+			                     ,AFTCH_INFO
+			                     ,NTFC_DE
+			                     ,ERSR_DE
+			                FROM TC_SPRD_STRET
+			               WHERE emd_se = '1'
+			                 AND use_yn != '1'
+			               <if test="selectId != null">
+				              <if test="cn != null and cn != '' and !cn.equals('all') ">
+				              	AND cn LIKE ('%'||#{cn}||'%')
+				              </if>
+				              <if test="sign != null and sign != '' and !sign.equals('all') ">
+				              	AND sign LIKE ('%'||#{sign}||'%')
+				              </if>
+				               <if test="emdn != null and emdn != '' and !emdn.equals('all') ">
+				              	AND emdn LIKE ('%'||#{emdn}||'%')
+				              </if>
+				              <if test="rn != null and rn != ''">
+				              	AND rn LIKE ('%' || #{rn} || '%')
+				              </if>
+			              </if>
+			             ) AA
+			       ) AAA
+			  WHERE
+			       AAA.RNUM BETWEEN #{firstIndex} AND #{lastIndex}
+	</select>
+
+	<!-- resultType은 안 되고 resultClass는 돼? 뭔데 두개가 뭔 차인데? parameterClass는 되고 parameterType은 왜 또 안 되지?
+	아 매퍼는 type인데 sqlmap은 전부 클래스야 ㅇ0ㅇ -->
+	<select id="selectDoroListTotCnt" parameterType="doroPageVO" resultType="int">
+			SELECT COUNT(*) as totcnt
+			FROM TC_SPRD_STRET
+			WHERE 1=1 and emd_se = '1'
+			<if test="cn != null and cn != '' and !cn.equals('all') ">
+              	AND cn LIKE ('%'||#{cn}||'%')
+            </if>
+              <if test="sign != null and sign != '' and !sign.equals('all') ">
+              	AND sign LIKE ('%'||#{sign}||'%')
+              </if>
+               <if test="emdn != null and emdn != '' and !emdn.equals('all') ">
+              	AND emdn LIKE ('%'||#{emdn}||'%')
+              </if>
+	</select>
+
+	<select id="selectCnList" resultType="doroVO">
+		select distinct CN
+		from TC_SPRD_STRET
+		WHERE emd_se = '1'
+		ORDER BY CN ASC
+	</select>
+
+	<select id="selectCnSearchList" resultType="java.util.HashMap" parameterType="String">
+			SELECT DISTINCT sign
+			  FROM tc_sprd_stret
+			 WHERE cn = #{cn} and emd_se != '2'
+	      ORDER BY sign ASC
+	</select>
+
+	<select id="selectSignSearchList" resultType="java.util.HashMap" parameterType="String">
+			SELECT DISTINCT emdn
+              FROM tc_sprd_stret
+             WHERE sign = #{sign} and emd_se != '2'
+          ORDER BY emdn ASC
+	</select>
+
+	<select id="selectEmdnSearchList" resultType="java.util.HashMap" parameterType="String">
+			SELECT DISTINCT rn
+			  FROM tc_sprd_stret
+			 WHERE emdn = #{emdn} and emd_se != '2'
+	      ORDER BY rn ASC
+	</select>
+
+	<insert id="insertDoro" parameterType="doroVO">
+			INSERT INTO tc_sprd_stret(rn_cd, emd_no, cn, rn, sign, emdn, emd_se )
+			VALUES(#{rnCd},#{emdNo},#{cn},#{rn},#{sign},#{emdn},#{emdSe})
+	</insert>
+
+	<select id="selectOneDoro" resultType="doroVO" parameterType="map">
+			SELECT  RN_CD
+                   ,RN
+                   ,ENG_RN
+                   ,EMD_NO
+                   ,CN
+                   ,ENG_CN
+                   ,SIGN
+                   ,ENG_SIGN
+                   ,EMDN
+                   ,ENG_EMD
+                   ,EMD_SE
+                   ,EMD_CD
+                   ,USE_YN
+                   ,CHGHY
+                   ,AFTCH_INFO
+                   ,NTFC_DE
+                   ,ERSR_DE FROM tc_sprd_stret WHERE rn_cd = #{rnCd} and emd_no = #{emdNo}
+	</select>
+
+	<!-- <delete id="deleteDoro" parameterType="map">
+		DELETE FROM tc_sprd_stret WHERE rn_cd= #{rnCd} AND emd_no = CONCAT('0',#{emdNo})
+	</delete> -->
+
+	<update id="deleteDoro" parameterType="map">
+		UPDATE tc_sprd_stret
+		   SET use_yn = '1'
+		 WHERE rn_cd= #{rnCd} AND emd_no = CONCAT('0',#{emdNo})
+	</update>
+
+	<update id="updateDoro" parameterType="doroVO">
+		UPDATE TC_SPRD_STRET
+		   SET emd_no = #{emdNo}, cn = #{cn} , rn = #{rn}, sign = #{sign}, emdn = #{emdn}
+		 WHERE rn_cd = #{rnCd} AND emd_no = #{emdNo}
+	</update>
+
+	<select id="selectDoroList2" parameterType="map" resultType="doroVO">
+			SELECT
+			      AAA.*
+			  FROM( SELECT
+			              COUNT(*) OVER() AS TOTAL_COUNT,
+			              AA.*
+			         FROM(
+			         	   SELECT ROW_NUMBER() OVER (ORDER BY RN_CD ASC) as RNUM
+			                     ,RN_CD
+			                     ,RN
+			                     ,ENG_RN
+			                     ,EMD_NO
+			                     ,CN
+			                     ,ENG_CN
+			                     ,SIGN
+			                     ,ENG_SIGN
+			                     ,EMDN
+			                     ,ENG_EMD
+			                     ,EMD_SE
+			                     ,EMD_CD
+			                     ,USE_YN
+			                     ,CHGHY
+			                     ,AFTCH_INFO
+			                     ,NTFC_DE
+			                     ,ERSR_DE
+			                FROM TC_SPRD_STRET
+			               WHERE emd_se = '1' and use_yn != '1'
+			               <if test="searchYn == 'true'">
+				               <if test="selectId != null">
+					              <if test="cn != null and cn != '' and !cn.equals('all') ">
+					              	AND cn LIKE ('%'||#{cn}||'%')
+					              </if>
+					              <if test="sign != null and sign != '' and !sign.equals('all') ">
+					              	AND sign LIKE ('%'||#{sign}||'%')
+					              </if>
+					               <if test="emdn != null and emdn != '' and !emdn.equals('all') ">
+					              	AND emdn LIKE ('%'||#{emdn}||'%')
+					              </if>
+					              <if test="rn != null and rn != ''">
+					              	AND rn LIKE ('%' || #{rn} || '%')
+					              </if>
+				              </if>
+			              </if>
+			             ) AA
+			       ) AAA
+			  WHERE
+			       AAA.RNUM BETWEEN #{firstIndex} AND #{lastIndex}
+	</select>
+
+<!-- 회원 테이블 sql -->
+
+	<select id="selectMemberList" resultType="memberVO">
+		SELECT
+		   mem_seq
+	       ,mem_id
+	       ,mem_pwd
+	       ,mem_name
+	       ,mem_tel
+	       ,mem_email
+	       ,road_full_addr
+	       ,road_addr_part1
+	       ,road_addr_part2
+	       ,zip_no
+	       ,addr_detail
+ 		FROM member
+	</select>
+
+	<insert id="insertMember" parameterType="memberVO">
+		INSERT INTO member(
+	       mem_seq <!-- 1 -->
+	       ,mem_id <!-- 2 -->
+	       ,mem_pwd <!-- 3 -->
+	       ,mem_name <!-- 4 -->
+	       ,mem_tel <!-- 5 -->
+	       ,mem_email <!-- 6 -->
+	       ,road_full_addr <!-- 7 -->
+		   ,road_addr_part1 <!-- 8 -->
+		   ,road_addr_part2 <!-- 9 -->
+		   ,zip_no <!-- 10 -->
+		   ,addr_detail  <!-- 11 -->
+	    )
+		VALUES (
+	        seq.NEXTVAL <!-- 1.mem_seq -->
+	        ,#{memId} <!-- 2.mem_id -->
+	        ,#{memPwd} <!-- 3.mem_pwd -->
+	        ,#{memName} <!-- 4.mem_name -->
+	        ,#{memTel} <!-- 5.mem_tel -->
+	        ,#{memEmail} <!-- 6.mem_email -->
+	        ,#{roadFullAddr} <!-- 7.road_full_addr -->
+	        ,#{roadAddrPart1} <!-- 8.road_addr_part1 -->
+	        ,#{roadAddrPart2} <!-- 9.road_addr_part2 -->
+	        ,#{zipNo} <!-- 10.zip_no -->
+	        ,#{addrDetail} <!-- 11.addr_detail -->
+	    )
+
+	</insert>
+
+	<select id="selectOneMember" parameterType="memberVO" resultType="memberVO">
+		SELECT
+			mem_seq
+		    ,mem_id
+		    ,mem_pwd
+		    ,mem_tel
+		    ,mem_email
+		    ,road_full_addr
+		    ,road_addr_part1
+		    ,road_addr_part2
+		    ,zip_no
+		    ,addr_detail
+		FROM member
+		WHERE
+		<if test="memId != null and memId != ''">
+			mem_id = #{memId}
+		</if>
+	</select>
+
+	<select id="passwordMatch" parameterType="String" resultType="boolean">
+		SELECT IF(COUNT(*) = 1, 1, 0)
+		FROM member
+		WHERE mem_pwd = #{decodePwd}
+	</select>
+</mapper>
