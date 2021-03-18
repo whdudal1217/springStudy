@@ -9,7 +9,7 @@ import egovframework.rte.fdl.cryptography.impl.EgovARIACryptoServiceImpl;
 @Component("sha256Util")
 public class UserSha256 {
 
-	public static String encrypt(String planText, String key) {
+	public static String decrypted(String planText, String key) {
 		EgovPasswordEncoder egovPasswordEncoder = new EgovPasswordEncoder();
 		EgovARIACryptoServiceImpl egovARIACryptoServiceImpl = new EgovARIACryptoServiceImpl();
 
@@ -26,7 +26,7 @@ public class UserSha256 {
 
 	}
 
-	public static String decrypted(String planText, String key) {
+	public static String encrypted(String planText, String key) {
 
 		EgovPasswordEncoder egovPasswordEncoder = new EgovPasswordEncoder();
 		EgovARIACryptoServiceImpl egovARIACryptoServiceImpl = new EgovARIACryptoServiceImpl();

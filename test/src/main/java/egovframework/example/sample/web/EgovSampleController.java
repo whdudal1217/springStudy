@@ -510,8 +510,11 @@ public class EgovSampleController {
 	@RequestMapping(value = "memberInsert.do")
 	public String memberInsertController(@ModelAttribute("memberVO")MemberVO memberVO)throws Exception{
 		String viewPage = "";
+
+		System.out.println("before encode pwd : " + memberVO.getMemPwd());
 		try {
-			String enPwd = UserSha256.encrypt(memberVO.getMemPwd(), memberVO.getMemId());
+			String enPwd = UserSha256.encrypted(memberVO.getMemPwd(), memberVO.getMemId());
+			System.out.println("after encode pwd : " + enPwd);
 			memberVO.setMemPwd(enPwd);
 			int insertCnt = sampleService.memberInsert(memberVO);
 
@@ -544,8 +547,10 @@ public class EgovSampleController {
 			message = "회원정보가 틀렸습니다.";
 			viewPage = "redirect:/login/loginForm.do";
 		}else {
-			String decodePwd = UserSha256.decrypted(resMember.getMemPwd(), resMember.getMemId());
+			String decodePwd = UserSha256.encrypted(memberVO.getMemPwd(), resMember.getMemId());
+			System.out.println("decodePwd : " + decodePwd);
 			boolean matchPwd = sampleService.passwordMatch(decodePwd); //성공하면 true가 돌아옴
+			System.out.println( "matchPwd : " + matchPwd);
 			if(matchPwd) {
 				message = resMember.getMemName() + "님 환영합니다.";
 				session.setAttribute("LOGIN_USER", resMember);

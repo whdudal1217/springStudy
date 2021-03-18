@@ -265,8 +265,7 @@
 	</select>
 
 	<select id="passwordMatch" parameterType="String" resultType="boolean">
-		SELECT IF(COUNT(*) = 1, 1, 0)
-		FROM member
-		WHERE mem_pwd = #{decodePwd}
+		SELECT DECODE(counting, 1,1,0) as result
+		FROM (select count(mem_pwd) as counting from Member where mem_pwd = #{decodePwd} )
 	</select>
 </mapper>
