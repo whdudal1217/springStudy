@@ -189,7 +189,13 @@ function ajaxPassTest(cn,sign,emdn,selectId) {
 	<h1 onclick="location.href ='doro.do?searchYn=false'" style="cursor:pointer; width:200px;">도로명주소</h1>
 	<input type="button" id="insert" onclick="location.href='doroInsert.do'" value="도로명 추가">
 	<input type="button" id="memInsert" onclick="location.href='memberSelect.do'" value="회원목록">
-	<input type="button" id="memInsert" onclick="location.href='memberInsert.do'" value="회원가입">
+	<c:if test="${sessionScope.LOGIN_USER != null}">
+		<input type="button" id="logout" onclick="location.href= 'logout.do'" value="로그아웃">
+		${LOGIN_USER.memId} 님 환영합니다.
+	</c:if>
+	<c:if test="${sessionScope.LOGIN_USER == null}">
+		<input type="button" id="memInsert" onclick="location.href='memberInsert.do'" value="회원가입">
+	</c:if>
 	<p/>
 </div>
 

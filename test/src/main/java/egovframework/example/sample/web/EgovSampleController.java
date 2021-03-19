@@ -513,7 +513,8 @@ public class EgovSampleController {
 
 		System.out.println("before encode pwd : " + memberVO.getMemPwd());
 		try {
-			String enPwd = UserSha256.encrypted(memberVO.getMemPwd(), memberVO.getMemId());
+			//String enPwd = UserSha256.encrypted(memberVO.getMemPwd(), memberVO.getMemId());
+			String enPwd = UserSha256.testSHA256(memberVO.getMemPwd());
 			System.out.println("after encode pwd : " + enPwd);
 			memberVO.setMemPwd(enPwd);
 			int insertCnt = sampleService.memberInsert(memberVO);
@@ -547,7 +548,8 @@ public class EgovSampleController {
 			message = "회원정보가 틀렸습니다.";
 			viewPage = "redirect:/login/loginForm.do";
 		}else {
-			String decodePwd = UserSha256.encrypted(memberVO.getMemPwd(), resMember.getMemId());
+			//String decodePwd = UserSha256.encrypted(memberVO.getMemPwd(), resMember.getMemId());
+			String decodePwd = UserSha256.testSHA256(memberVO.getMemPwd());
 			System.out.println("decodePwd : " + decodePwd);
 			boolean matchPwd = sampleService.passwordMatch(decodePwd); //성공하면 true가 돌아옴
 			System.out.println( "matchPwd : " + matchPwd);
@@ -558,6 +560,11 @@ public class EgovSampleController {
 			}
 		}
 		return viewPage;
+	}
+	@RequestMapping(value = "/logout.do")
+	public String logoutController(HttpSession session) {
+		session.invalidate();
+		return "redirect:/doro.do";
 	}
 }
 
